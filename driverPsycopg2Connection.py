@@ -1,4 +1,12 @@
 import psycopg2
+import configparser
+import os
+
+# Reading the config
+configParser = configparser.ConfigParser()
+configFilePath = os.getcwd() + "/config.cfg"
+configParser.read_file(open(configFilePath))
+password = configParser.get('My Section', 'password')
 
 conn = None
 cursor = None
@@ -7,7 +15,7 @@ try:
         host = "localhost",
         database = "python_driver_db",
         user = "postgres",
-        password = "Pelmeni",
+        password = password,
         port = 5432
     )
     cursor = conn.cursor()
