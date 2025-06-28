@@ -4,8 +4,8 @@ from abstract_driver import AbstractDriver
 
 
 class Pg8000(AbstractDriver):
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, config, workload):
+        super().__init__(config, workload)
         self.conn = None
 
     async def connect(self):
@@ -18,8 +18,8 @@ class Pg8000(AbstractDriver):
         )
 
     async def handle_workload(self):
-       rows = self.conn.run("SELECT * FROM datatable")
-       print("hello from pg8000!\n", rows)
+        for query in self.workload:
+            self.conn.run(query)
 
     async def close_connection(self):
         if self.conn:

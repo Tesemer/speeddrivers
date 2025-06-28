@@ -4,8 +4,8 @@ from abstract_driver import AbstractDriver
 
 
 class Psycopg2Driver(AbstractDriver):
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, config, workload):
+        super().__init__(config, workload)
         self.conn = None
         self.cursor = None
 
@@ -24,9 +24,9 @@ class Psycopg2Driver(AbstractDriver):
             print(error)
 
     async def handle_workload(self):
-        self.cursor.execute("SELECT * FROM datatable")
-        rows = self.cursor.fetchall()
-        print("hello from psycopg2!\n", rows)
+        for query in self.workload:
+            self.cursor.execute(query)
+
 
     async def close_connection(self):
         if self.conn:

@@ -5,19 +5,13 @@ from enum import Enum
 from crud import Crud
 from schema import Datatable
 
-random.seed()
-
-def generate_workload(benchmark_id, workload_operation: Crud, amount, insert_per_column_size):
-    workload_name = f'WL-{benchmark_id}-{workload_operation.value}'
-    match workload_operation:
-        case Crud.CREATE:
-            generate_insert(workload_name, amount, insert_per_column_size)
-        case Crud.READ:
-            generate_read(workload_name)
-        case Crud.UPDATE:
-            generate_update(workload_name, amount, insert_per_column_size)
-        case Crud.DELETE:
-            generate_delete(workload_name, amount)
+def generate_workloads(benchmark_id, seed, amount, insert_per_column_size) -> list[list[str]]:
+    random.seed(seed)
+    workload_prefix = f'WL-{benchmark_id}-{seed}'
+    return [generate_insert(f'{workload_prefix}{Crud.CREATE.value}', amount, insert_per_column_size),
+            generate_read(f'{workload_prefix}{Crud.READ.value}'),
+            generate_update(f'{workload_prefix}{Crud.UPDATE.value}', amount, insert_per_column_size),
+            generate_delete(f'{workload_prefix}{Crud.DELETE.value}', amount)]
 
 # Generates new random values amount-times with insert-per-column-size
 def generate_insert(workload_name, amount, insert_per_column_size):
@@ -34,13 +28,14 @@ def generate_insert(workload_name, amount, insert_per_column_size):
     for query in all_queries:
         textfile.write(query + "\n")
     textfile.close()
+    return all_queries
 
 # creates one random insert entry to add one row
 def insert_entry(id, insert_per_column_size):
     insert_values = []
     for i in range(10):
         insert_random_value = ''.join(random.choices(string.ascii_letters + string.digits, k=insert_per_column_size))
-        insert_values.append(insert_random_value)
+        insert_values.append(f"'{insert_random_value}'")
 
     insert_query = f'INSERT INTO datatable VALUES ({id}, {', '.join(insert_values)})'
     return insert_query
@@ -48,8 +43,10 @@ def insert_entry(id, insert_per_column_size):
 # For now READ-WL is: "select everything from table"
 def generate_read(workload_name):
     textfile = open('benchmark_data/' + workload_name, 'x')
-    textfile.write('SELECT * FROM datatable')
+    query = 'SELECT * FROM datatable'
+    textfile.write(query)
     textfile.close()
+    return [query]
 
 # updates every column with new random values with the same size, and "amount" of times
 def generate_update(workload_name, amount, insert_per_column_size):
@@ -65,6 +62,7 @@ def generate_update(workload_name, amount, insert_per_column_size):
     for query in all_queries:
         textfile.write(query + "\n")
     textfile.close()
+    return all_queries
 
 # creates one random update entry to update one row
 def update_entry(id, insert_per_column_size):
@@ -90,6 +88,7 @@ def generate_delete(workload_name, amount):
     for query in all_queries:
         textfile.write(query + "\n")
     textfile.close()
+    return all_queries
 
 # deletes one row
 def delete_entry(id):

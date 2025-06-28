@@ -1,12 +1,14 @@
-from sqlalchemy.orm import sessionmaker
 import sqlalchemy as sa
+
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
 from abstract_driver import AbstractDriver
 from schema import Base, Datatable
 
 
 class SqlalchemyDriver(AbstractDriver):
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, config, workload):
+        super().__init__(config, workload)
         self.engine = None
         self.session = None
 
@@ -23,9 +25,8 @@ class SqlalchemyDriver(AbstractDriver):
         self.session = sessionmaker(bind=self.engine)()
 
     async def handle_workload(self):
-        stmt = sa.select(Datatable)
-        row = self.session.execute(stmt).first()
-        print("hello from sqlalchemy!\n return row id:", row.Datatable.id)
+        for query in self.workload:
+            self.session.execute(text(query))
 
     async def close_connection(self):
         if self.session:
