@@ -1,1 +1,4 @@
+sqlalchemy
 psycopg2
+asyncpg
+pg8000
