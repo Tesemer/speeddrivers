@@ -1,10 +1,103 @@
+import datetime
 import random
+import string
+from enum import Enum
+from crud import Crud
+from schema import Datatable
 
 random.seed()
 
+def generate_workload(benchmark_id, workload_operation: Crud, amount, insert_per_column_size):
+    workload_name = f'WL-{benchmark_id}-{workload_operation.value}'
+    match workload_operation:
+        case Crud.CREATE:
+            generate_insert(workload_name, amount, insert_per_column_size)
+        case Crud.READ:
+            generate_read(workload_name)
+        case Crud.UPDATE:
+            generate_update(workload_name, amount, insert_per_column_size)
+        case Crud.DELETE:
+            generate_delete(workload_name, amount)
+
+# Generates new random values amount-times with insert-per-column-size
+def generate_insert(workload_name, amount, insert_per_column_size):
+    textfile = open('benchmark_data/' + workload_name, 'x')
+    insert_count = amount
+
+    all_queries = []
+    while insert_count > 0:
+        id = amount - insert_count
+        insert_query = insert_entry(id, insert_per_column_size)
+        all_queries.append(insert_query)
+        insert_count -= 1
+
+    for query in all_queries:
+        textfile.write(query + "\n")
+    textfile.close()
+
+# creates one random insert entry to add one row
+def insert_entry(id, insert_per_column_size):
+    insert_values = []
+    for i in range(10):
+        insert_random_value = ''.join(random.choices(string.ascii_letters + string.digits, k=insert_per_column_size))
+        insert_values.append(insert_random_value)
+
+    insert_query = f'INSERT INTO datatable VALUES ({id}, {', '.join(insert_values)})'
+    return insert_query
+
+# For now READ-WL is: "select everything from table"
+def generate_read(workload_name):
+    textfile = open('benchmark_data/' + workload_name, 'x')
+    textfile.write('SELECT * FROM datatable')
+    textfile.close()
+
+# updates every column with new random values with the same size, and "amount" of times
+def generate_update(workload_name, amount, insert_per_column_size):
+    textfile = open('benchmark_data/' + workload_name, 'x')
+    update_count = amount
+
+    all_queries = []
+    while update_count > 0:
+        update_query = update_entry(amount - update_count, insert_per_column_size)
+        all_queries.append(update_query)
+        update_count -= 1
+
+    for query in all_queries:
+        textfile.write(query + "\n")
+    textfile.close()
+
+# creates one random update entry to update one row
+def update_entry(id, insert_per_column_size):
+    update_values = []
+    for i in range(10):
+        update_random_value = ''.join(random.choices(string.ascii_letters + string.digits, k=insert_per_column_size))
+        update_values.append(f'field{i} = \'{update_random_value}\'')
+
+    update_query = f'UPDATE datatable SET {', '.join(update_values)} WHERE id={id}'
+    return update_query
+
+# deletes every row, row by row
+def generate_delete(workload_name, amount):
+    textfile = open('benchmark_data/' + workload_name, 'x')
+    delete_count = amount
+
+    all_queries = []
+    while delete_count > 0:
+        delete_query = delete_entry(amount - delete_count)
+        all_queries.append(delete_query)
+        delete_count -= 1
+
+    for query in all_queries:
+        textfile.write(query + "\n")
+    textfile.close()
+
+# deletes one row
+def delete_entry(id):
+    return f'DELETE FROM datatable WHERE id={id}'
+
 def generate_create(workload_name, table_prefix, amount):
 
-    textfile = open(workload_name, 'w')
+    textfile = open('benchmark_data/' + workload_name, 'w')
 
     create_count = amount
     drop_count = amount
