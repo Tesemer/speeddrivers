@@ -17,8 +17,9 @@ class AsyncpgDriver(AbstractDriver):
         self.conn = await asyncpg.connect(db_url)
 
     async def handle_workload(self):
-        for query in self.workload:
-            await self.conn.execute(query)
+        async with self.conn.transaction():
+            for query in self.workload:
+                await self.conn.execute(query)
 
     async def close_connection(self):
         if self.conn:
