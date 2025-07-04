@@ -22,7 +22,7 @@ async def main():
 
     # Result csv file
     result_file = open(f'benchmark_results/results_{benchmark_id}_{amount}.csv', 'x')
-    result_file.write('Driver, Operation, Time\n')
+    result_file.write('driver, operation, time, count\n')
 
     await perform_driver_benchmark(config, result_file, [(insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
     result_file.close()
@@ -44,9 +44,11 @@ async def perform_driver_benchmark(config, result_file, operation_workloads):
             times = await driver.handle_timed_workload()
 
             # Writing results in the csv file
+            index = 0
             for stamp in times:
                 # operation_workload[1] is the name of the operation (see the tuple above)
-                res_entry = f'{driver_class.__name__}, {operation_workload[1]}, {stamp}\n'
+                res_entry = f'{driver_class.__name__}, {operation_workload[1]}, {stamp}, {index}\n'
+                index += 1
                 result_file.write(res_entry)
 
             await driver.close_connection()
