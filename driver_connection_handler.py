@@ -19,9 +19,15 @@ async def main():
     insert_per_column_size = int(config.get('workload', 'INSERT_PER_COLUMN_SIZE'))
     benchmark_id = uuid.uuid4()
     insert_wl, read_wl, update_wl, delete_wl = generate_workloads(benchmark_id, seed, amount, insert_per_column_size)
-    await perform_driver_benchmark(config, [(insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
 
-async def perform_driver_benchmark(config, operation_workloads):
+    # Result csv file
+    result_file = open(f'benchmark_results/results_{benchmark_id}_{amount}.csv', 'x')
+    result_file.write('Driver, Operation, Time\n')
+
+    await perform_driver_benchmark(config, result_file, [(insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
+    result_file.close()
+
+async def perform_driver_benchmark(config, result_file, operation_workloads):
     for driver_class in AbstractDriver.__subclasses__():
         for operation_workload in operation_workloads:
             driver = driver_class(config, operation_workload[0])
@@ -36,10 +42,12 @@ async def perform_driver_benchmark(config, operation_workloads):
 
             # THIS IS WITH ALL THE NUMBERS
             times = await driver.handle_timed_workload()
-            print(f"DRIVER: {driver_class.__name__}")
+
+            # Writing results in the csv file
             for stamp in times:
-                print(f"handled operation {operation_workload[1]} in {stamp:.4f} seconds")
-            print("")
+                # operation_workload[1] is the name of the operation (see the tuple above)
+                res_entry = f'{driver_class.__name__}, {operation_workload[1]}, {stamp}\n'
+                result_file.write(res_entry)
 
             await driver.close_connection()
 
