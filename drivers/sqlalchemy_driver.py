@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+import time
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
@@ -27,6 +28,14 @@ class SqlalchemyDriver(AbstractDriver):
     async def handle_workload(self):
         for query in self.workload:
             self.session.execute(text(query))
+
+    async def handle_timed_workload(self):
+        times = []
+        for query in self.workload:
+            start = time.perf_counter()  # Start time
+            self.session.execute(text(query))
+            times.append(time.perf_counter() - start)  # End time - Start time
+        return times
 
     async def close_connection(self):
         if self.session:

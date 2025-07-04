@@ -42,11 +42,15 @@ def insert_entry(id, insert_per_column_size):
 
 # For now READ-WL is: "select everything from table"
 def generate_read(workload_name):
+    query_values = []
     textfile = open('benchmark_data/' + workload_name, 'x')
     query = 'SELECT * FROM datatable'
+    query_values.append(query)
+    query_values.append(query)
+    query = query + "\n" + query + "\n"
     textfile.write(query)
     textfile.close()
-    return [query]
+    return query_values
 
 # updates every column with new random values with the same size, and "amount" of times
 def generate_update(workload_name, amount, insert_per_column_size):
@@ -160,4 +164,4 @@ def create_entry(table_prefix, num):
                                                  " field9 VARCHAR(100));")
     return create_sql
 
-generate_create("W1", "tab", 100)
+#generate_create("W1", "tab", 100)

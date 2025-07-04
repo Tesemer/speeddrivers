@@ -1,5 +1,6 @@
 from abstract_driver import AbstractDriver
 import asyncpg
+import time
 
 class AsyncpgDriver(AbstractDriver):
     def __init__(self, config, workload):
@@ -20,6 +21,15 @@ class AsyncpgDriver(AbstractDriver):
         async with self.conn.transaction():
             for query in self.workload:
                 await self.conn.execute(query)
+
+    async def handle_timed_workload(self):
+        times = []
+        async with self.conn.transaction():
+            for query in self.workload:
+                start = time.perf_counter() # Start time
+                await self.conn.execute(query)
+                times.append(time.perf_counter() - start) # End time - Start time
+        return times
 
     async def close_connection(self):
         if self.conn:

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-
 # create abstract base class which enforces driver classes to perform given task
 class AbstractDriver(ABC):
 
@@ -14,6 +13,10 @@ class AbstractDriver(ABC):
 
     @abstractmethod
     async def handle_workload(self):
+        pass
+
+    @abstractmethod
+    async def handle_timed_workload(self):
         pass
 
     @abstractmethod

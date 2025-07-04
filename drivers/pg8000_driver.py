@@ -1,4 +1,5 @@
 import pg8000.native
+import time
 
 from abstract_driver import AbstractDriver
 
@@ -20,6 +21,14 @@ class Pg8000(AbstractDriver):
     async def handle_workload(self):
         for query in self.workload:
             self.conn.run(query)
+
+    async def handle_timed_workload(self):
+        times = []
+        for query in self.workload:
+            start = time.perf_counter()  # Start time
+            self.conn.run(query)
+            times.append(time.perf_counter() - start)  # End time - Start time
+        return times
 
     async def close_connection(self):
         if self.conn:

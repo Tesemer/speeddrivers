@@ -1,4 +1,5 @@
 import psycopg2
+import time
 
 from abstract_driver import AbstractDriver
 
@@ -27,6 +28,13 @@ class Psycopg2Driver(AbstractDriver):
         for query in self.workload:
             self.cursor.execute(query)
 
+    async def handle_timed_workload(self):
+        times = []
+        for query in self.workload:
+            start = time.perf_counter()  # Start time
+            self.cursor.execute(query)
+            times.append(time.perf_counter() - start)  # End time - Start time
+        return times
 
     async def close_connection(self):
         if self.conn:
