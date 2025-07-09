@@ -21,7 +21,7 @@ async def main():
     insert_wl, read_wl, update_wl, delete_wl = generate_workloads(benchmark_id, seed, amount, insert_per_column_size)
 
     # Result csv file
-    result_file = open(f'benchmark_results/results_{benchmark_id}_{amount}.csv', 'x')
+    result_file = open(f'benchmark_results/results_{amount}.csv', 'x')
     result_file.write('driver, operation, time, count\n')
 
     await perform_driver_benchmark(config, result_file, [(insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
