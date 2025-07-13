@@ -24,7 +24,7 @@ async def main():
     result_file = open(f'benchmark_results/results_{amount}.csv', 'x')
     result_file.write('driver, operation, time, count\n')
 
-    await perform_driver_benchmark(config, result_file, [(delete_wl, "delete"), (insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
+    await perform_driver_benchmark(config, result_file, [(insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
     result_file.close()
 
 async def perform_driver_benchmark(config, result_file, operation_workloads):
