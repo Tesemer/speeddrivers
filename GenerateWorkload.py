@@ -42,15 +42,17 @@ def insert_entry(id, insert_per_column_size):
 
 # For now READ-WL is: "select everything from table"
 def generate_read(workload_name):
-    query_values = []
     textfile = open('benchmark_data/' + workload_name, 'x')
-    query = 'SELECT * FROM datatable'
-    query_values.append(query)
-    query_values.append(query)
-    query = query + "\n" + query + "\n"
-    textfile.write(query)
+    letters = string.ascii_letters
+    all_queries = []
+    for letter in letters:
+        all_queries.append(f'SELECT * FROM datatable WHERE field0 LIKE \'%{letter}%\'')
+
+    print(all_queries)
+    for query in all_queries:
+        textfile.write(query + "\n")
     textfile.close()
-    return query_values
+    return all_queries
 
 # updates every column with new random values with the same size, and "amount" of times
 def generate_update(workload_name, amount, insert_per_column_size):
