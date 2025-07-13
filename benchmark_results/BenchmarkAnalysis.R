@@ -8,7 +8,9 @@ data_100 <- read.csv("results_100.csv")
 data_1000 <- read.csv("results_1000.csv")
 data_10000 <- read.csv("results_10000.csv")
 
-data_all <- 
+data_all <- list.files(path=getwd(), pattern="*.csv") %>%
+  lapply(read_csv) %>%
+  bind_rows
 
 
 make_boxplots <- function(input_data, text) {
@@ -125,8 +127,45 @@ plotting_data <- function(input_data, size) {
   
 }
 
+plot_alternative <- function(input_data) {
+  
+  # Delete
+  del <- input_data %>% filter(operation=='delete')
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot() + xlim(0, 0.001)
+  ggsave(file=paste0(getwd(), "/plots/all_bp_delete_capped", ".png"))
+  
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot()
+  ggsave(file=paste0(getwd(), "/plots/all_bp_delete_uncapped", ".png"))
+  
+  # Insert
+  del <- input_data %>% filter(operation=='insert')
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot() + xlim(0, 0.001)
+  ggsave(file=paste0(getwd(), "/plots/all_bp_insert_capped", ".png"))
+  
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot()
+  ggsave(file=paste0(getwd(), "/plots/all_bp_insert_uncapped", ".png"))
+  
+  # Read
+  del <- input_data %>% filter(operation=='read')
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot() + xlim(0, 0.001)
+  ggsave(file=paste0(getwd(), "/plots/all_bp_read_capped", ".png"))
+  
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot()
+  ggsave(file=paste0(getwd(), "/plots/all_bp_read_uncapped", ".png"))
+  
+  # Update
+  del <- input_data %>% filter(operation=='update')
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot() + xlim(0, 0.001)
+  ggsave(file=paste0(getwd(), "/plots/all_bp_update_capped", ".png"))
+  
+  del %>% ggplot(aes(x=time, y=driver, group=interaction(size, driver), colour=size)) + geom_boxplot()
+  ggsave(file=paste0(getwd(), "/plots/all_bp_update_uncapped", ".png"))
+  
+}
 
+# Alternative plotting
+plot_alternative(data_all)
 
-plotting_data(data_100, "100")
-plotting_data(data_1000, "1000")
-plotting_data(data_10000, "10000")
+#plotting_data(data_100, "100")
+#plotting_data(data_1000, "1000")
+#plotting_data(data_10000, "10000")

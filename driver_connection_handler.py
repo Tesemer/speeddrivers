@@ -22,12 +22,12 @@ async def main():
 
     # Result csv file
     result_file = open(f'benchmark_results/results_{amount}.csv', 'x')
-    result_file.write('driver, operation, time, count\n')
+    result_file.write('driver, operation, time, count, size\n')
 
-    await perform_driver_benchmark(config, result_file, [(insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
+    await perform_driver_benchmark(config, result_file, amount,[(insert_wl, "insert"), (read_wl, "read"), (update_wl, "update"), (delete_wl, "delete")])
     result_file.close()
 
-async def perform_driver_benchmark(config, result_file, operation_workloads):
+async def perform_driver_benchmark(config, result_file, size, operation_workloads):
     for driver_class in AbstractDriver.__subclasses__():
         for operation_workload in operation_workloads:
             driver = driver_class(config, operation_workload[0])
@@ -47,7 +47,7 @@ async def perform_driver_benchmark(config, result_file, operation_workloads):
             index = 0
             for stamp in times:
                 # operation_workload[1] is the name of the operation (see the tuple above)
-                res_entry = f'{driver_class.__name__},{operation_workload[1]},{stamp},{index}\n'
+                res_entry = f'{driver_class.__name__},{operation_workload[1]},{stamp},{index},{size}\n'
                 index += 1
                 result_file.write(res_entry)
 
