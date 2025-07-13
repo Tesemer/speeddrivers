@@ -15,11 +15,11 @@ class SqlalchemyDriver(AbstractDriver):
 
     async def connect(self):
         db_url = (
-                f'postgresql://{self.config.get('database', 'USER')}:' +
-                f'{self.config.get('database', 'PASSWORD')}@' +
-                f'{self.config.get('database', 'HOST')}:' +
-                f'{self.config.get('database', 'PORT')}/' +
-                f'{self.config.get('database', 'DATABASE_NAME')}'
+                f'postgresql://{self.config.get("database", "USER")}:' +
+                f'{self.config.get("database", "PASSWORD")}@' +
+                f'{self.config.get("database", "HOST")}:' +
+                f'{self.config.get("database", "PORT")}/' +
+                f'{self.config.get("database", "DATABASE_NAME")}'
         )
         self.engine = sa.create_engine(db_url)
         Base.metadata.create_all(self.engine)

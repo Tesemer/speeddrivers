@@ -48,10 +48,12 @@ async def perform_driver_benchmark(config, result_file, size, operation_workload
             for stamp in times:
                 # operation_workload[1] is the name of the operation (see the tuple above)
                 res_entry = f'{driver_class.__name__},{operation_workload[1]},{stamp},{index},{size}\n'
+                print(res_entry)
                 index += 1
                 result_file.write(res_entry)
 
             await driver.close_connection()
+
 
 asyncio.run(main())
 

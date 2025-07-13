@@ -37,7 +37,7 @@ def insert_entry(id, insert_per_column_size):
         insert_random_value = ''.join(random.choices(string.ascii_letters + string.digits, k=insert_per_column_size))
         insert_values.append(f"'{insert_random_value}'")
 
-    insert_query = f'INSERT INTO datatable VALUES ({id}, {', '.join(insert_values)})'
+    insert_query = f'INSERT INTO datatable VALUES ({id}, {", ".join(insert_values)})'
     return insert_query
 
 # For now READ-WL is: "select everything from table"
@@ -77,7 +77,7 @@ def update_entry(id, insert_per_column_size):
         update_random_value = ''.join(random.choices(string.ascii_letters + string.digits, k=insert_per_column_size))
         update_values.append(f'field{i} = \'{update_random_value}\'')
 
-    update_query = f'UPDATE datatable SET {', '.join(update_values)} WHERE id={id}'
+    update_query = f'UPDATE datatable SET {", ".join(update_values)} WHERE id={id}'
     return update_query
 
 # deletes every row, row by row
@@ -150,10 +150,10 @@ def drop_entry(table_prefix, num):
     return drop_sql
 
 
-def create_entry(table_prefix, num):
+def create_entry(table_prefix, num = ""):
     # Creating a creation entry
     table_name = table_prefix + str(num)
-    create_sql = "CREATE TABLE " + table_name + (" (id INT SERIAL,"
+    create_sql = "CREATE TABLE IF NOT EXISTS " + table_name + (" (id SERIAL,"
                                                  "field0 VARCHAR(100),"
                                                  " field1 VARCHAR(100),"
                                                  " field2 VARCHAR(100),"
